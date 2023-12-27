@@ -1,0 +1,11 @@
+project(sample)
+cmake_minimum_required(VERSION 3.24)
+
+set(CMAKE_CXX_STANDARD 17)
+
+add_executable(sample sample.cpp)
+
+find_package(hikvision_cv_utils CONFIG REQUIRED)
+find_package(OpenCV 4.5.5 REQUIRED)
+
+target_link_libraries(sample PRIVATE hik::hikvision_cv_utils ${OpenCV_LIBS} )

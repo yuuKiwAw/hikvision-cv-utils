@@ -48,6 +48,8 @@ add_library(${PackageName}
 )
 target_link_libraries(${PackageName} PRIVATE ${OpenCV_LIBS} MvCameraControl)
 
+add_subdirectory(examples)
+
 if(${CMAKE_BUILD_TYPE} MATCHES "Release")
     set(export_runtime_path bin)
     set(export_library_path lib)
