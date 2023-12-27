@@ -1,4 +1,7 @@
 #include "hikvisionccd_cv_utils/hikvision/yukihikccd.hpp"
+#include <cstddef>
+#include <iostream>
+#include "hikvisionccd_cv_utils/hikvision/MvCameraControl.h"
 
 namespace ykhik {
 
@@ -112,7 +115,6 @@ void YukiHikCCD::RECEIVE_HIK_FRAME() {
     ret = MV_CC_GetIntValue(CCD_HANDLE, "PayloadSize", &hik_param);
     if (ret != MV_OK) {
         std::cout << "[ERROR]Get CCD Data packets failed!!!" << std::endl;
-        return;
     }
     payload_size = hik_param.nCurValue;
     std::cout << "[INFO]CCD PayloadSize: " << payload_size << std::endl;
@@ -120,13 +122,9 @@ void YukiHikCCD::RECEIVE_HIK_FRAME() {
     ret = MV_CC_StartGrabbing(CCD_HANDLE);
     if (ret != MV_OK) {
         std::cout << "[ERROR]Grab image failed!!!" << std::endl;
-        return;
     }
     memset(&hik_frame, 0, sizeof(MV_FRAME_OUT_INFO_EX));
     data = (unsigned char *)malloc(sizeof(unsigned char) * (payload_size));
-    if (data == NULL) {
-        return;
-    }
 }
 
 void YukiHikCCD::HKCCD_TO_CV() {
@@ -135,41 +133,34 @@ void YukiHikCCD::HKCCD_TO_CV() {
     if (ret != MV_OK) {
         free(data);
         data = NULL;
-        return;
     }
 
-    if (hik_frame.enPixelType == PixelType_Gvsp_Mono8) {
-        CV_MAT = cv::Mat(hik_frame.nHeight, hik_frame.nWidth, CV_8UC1, data);
-    } else if (hik_frame.enPixelType == PixelType_Gvsp_RGB8_Packed) {
-        for (unsigned int j = 0; j < hik_frame.nHeight; j++) {
-        for (unsigned int i = 0; i < hik_frame.nWidth; i++) {
-            unsigned char red = data[j * (hik_frame.nWidth * 3) + i * 3];
-            data[j * (hik_frame.nWidth * 3) + i * 3] =
-                data[j * (hik_frame.nWidth * 3) + i * 3 + 2];
-            data[j * (hik_frame.nWidth * 3) + i * 3 + 2] = red;
-        }
-        }
-        CV_MAT = cv::Mat(hik_frame.nHeight, hik_frame.nWidth, CV_8UC3, data);
-    } else {
-        return;
-    }
-
-    if (CV_MAT.data == NULL) {
-        return;
+    if (data != NULL) {
+        if (hik_frame.enPixelType == PixelType_Gvsp_Mono8) {
+            CV_MAT = cv::Mat(hik_frame.nHeight, hik_frame.nWidth, CV_8UC1, data);
+        } else if (hik_frame.enPixelType == PixelType_Gvsp_BayerRG8) {
+            CV_MAT = cv::Mat(hik_frame.nHeight, hik_frame.nWidth, CV_8UC1, data);
+            if (!CV_MAT.empty()) cv::cvtColor(CV_MAT, CV_MAT, cv::COLOR_BayerBG2BGR);
+        } else if (hik_frame.enPixelType == PixelType_Gvsp_RGB8_Packed) {
+            CV_MAT = cv::Mat(hik_frame.nHeight, hik_frame.nWidth, CV_8UC3, data);
+        } 
     }
 }
 
 void YukiHikCCD::CLOSE_CCD_DEVICE() {
+    ret = MV_CC_StopGrabbing(CCD_HANDLE);
+    if (ret != MV_OK) {
+        std::cout << "[ERROR]Stop Grabbing failed!!!" << std::endl;
+    }
+
     ret = MV_CC_CloseDevice(CCD_HANDLE);
     if (ret != MV_OK) {
         std::cout << "[ERROR]Destory CCD handle failed!!!" << std::endl;
-        return;
     }
 
     ret = MV_CC_DestroyHandle(CCD_HANDLE);
     if (ret != MV_OK) {
         std::cout << "[ERROR]Close CCD handle failed!!!" << std::endl;
-        return;
     }
 };
 

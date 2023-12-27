@@ -33,9 +33,7 @@ void HikCCDVideoPlayer::stop() {
 }
 
 void HikCCDVideoPlayer::run() {
-    while (true) {
-        if (stop_flag) break;
-
+    while (!stop_flag) {
         player_thread_mutex.lock();
         yuki_HIKCCD.HKCCD_TO_CV();
         frame = yuki_HIKCCD.CV_MAT;
