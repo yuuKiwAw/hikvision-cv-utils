@@ -164,4 +164,36 @@ void YukiHikCCD::CLOSE_CCD_DEVICE() {
     }
 };
 
+bool YukiHikCCD::ExposureAutoMod(float value) {
+    // value: [0:close 1:once 2:Continuous]
+    ret = MV_CC_SetExposureAutoMode(CCD_HANDLE, value);
+	if (MV_OK != ret)
+	{
+        std::cout << "[ERROR]Set ExposureAuto failed!!!" << std::endl;
+        return false;
+	}
+    return true;
+}
+
+bool YukiHikCCD::ExposureManualMod(float value) {
+    ret = MV_CC_SetEnumValue(CCD_HANDLE, "ExposureMode",0);//0：Timed
+	ret = MV_CC_SetFloatValue(CCD_HANDLE, "ExposureTime", value);
+	if (MV_OK != ret)
+	{
+		std::cout << "[ERROR]Set ExposureTime failed!!!" << std::endl;
+        return false;
+	}
+    return true;
+}
+
+bool YukiHikCCD::Brightness(float value) {
+    ret = MV_CC_SetBrightness(CCD_HANDLE, value);
+    if(ret != MV_OK)
+    {
+		std::cout << "[ERROR]Set Brightness failed!!!" << std::endl;
+        return false;
+    }
+    return true;
+}
+
 }

@@ -38,6 +38,10 @@ public:
     bool OPEN_CCD_DEVICE();
     void CLOSE_CCD_DEVICE();
     void HKCCD_TO_CV(); // Format CCD image data to opencv mat data.
+
+    bool ExposureAutoMod(float value);
+    bool ExposureManualMod(float value);
+    bool Brightness(float value);
 };
 
 } // namespace CCD

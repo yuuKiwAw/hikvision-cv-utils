@@ -32,6 +32,8 @@ public:
 
     int get_FPS();
     bool get_STOP_FLAG();
+
+    ykhik::YukiHikCCD *YukiHikCCD_Handle();
 };
 
 }

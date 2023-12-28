@@ -1,4 +1,5 @@
 #include "hikvisionccd_cv_utils/CCD/hikccd_videoplayer.hpp"
+#include "hikvisionccd_cv_utils/hikvision/yukihikccd.hpp"
 
 namespace CCD {
 
@@ -60,6 +61,10 @@ int HikCCDVideoPlayer::get_FPS() {
 
 bool HikCCDVideoPlayer::get_STOP_FLAG() {
     return stop_flag;
+}
+
+ykhik::YukiHikCCD *HikCCDVideoPlayer::YukiHikCCD_Handle() {
+    return &yuki_HIKCCD;
 }
 
 }

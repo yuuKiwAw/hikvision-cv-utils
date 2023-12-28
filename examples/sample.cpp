@@ -23,8 +23,28 @@ int main(int argc, char **argv) {
     }
     cv_mtx.unlock();
 
-    if (27 == cv::waitKey(1))
+    int key_code =  cv::waitKey(1);
+    if (key_code == 27)
       quit = true;
+    if (key_code == 'q') {
+      hik_CCD_video_player.YukiHikCCD_Handle()->ExposureManualMod(10000);
+    }
+    if (key_code == 'w') {
+      hik_CCD_video_player.YukiHikCCD_Handle()->ExposureAutoMod(1);
+    }
+    if (key_code == 'e') {
+      hik_CCD_video_player.YukiHikCCD_Handle()->ExposureAutoMod(2);
+    }
+    if (key_code == 'r') {
+      hik_CCD_video_player.YukiHikCCD_Handle()->ExposureAutoMod(0);
+    }
+    if (key_code == 'j') {
+      hik_CCD_video_player.YukiHikCCD_Handle()->Brightness(255);
+    }
+    if (key_code == 'k') {
+      hik_CCD_video_player.YukiHikCCD_Handle()->Brightness(0);
+    }
+
   }
 
   return 0;
